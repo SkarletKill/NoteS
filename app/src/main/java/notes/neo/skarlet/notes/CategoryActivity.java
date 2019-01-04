@@ -9,11 +9,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import notes.neo.skarlet.notes.adapters.CategoryAdapter;
 
 public class CategoryActivity extends AppCompatActivity {
     private ListView categoriesListView;
@@ -48,6 +51,13 @@ public class CategoryActivity extends AppCompatActivity {
 
         CategoryAdapter categoryAdapter = new CategoryAdapter(this, categories, descriptions, prices);
         categoriesListView.setAdapter(categoryAdapter);
+        categoriesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(CategoryActivity.this, RecordActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

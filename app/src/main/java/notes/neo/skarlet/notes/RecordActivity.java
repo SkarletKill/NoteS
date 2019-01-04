@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import notes.neo.skarlet.notes.adapters.RecordAdapter;
+
 public class RecordActivity extends AppCompatActivity {
     private ListView recordsListView;
     private List<String> records;
@@ -31,8 +33,8 @@ public class RecordActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent intent = new Intent(RecordActivity.this, NewRecordActivity.class);
-//                startActivity(intent);
+                Intent intent = new Intent(RecordActivity.this, NewRecordActivity.class);
+                startActivity(intent);
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }

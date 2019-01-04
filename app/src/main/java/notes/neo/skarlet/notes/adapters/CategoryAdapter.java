@@ -1,4 +1,4 @@
-package notes.neo.skarlet.notes;
+package notes.neo.skarlet.notes.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,6 +8,8 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.List;
+
+import notes.neo.skarlet.notes.R;
 
 public class CategoryAdapter extends BaseAdapter {
 
