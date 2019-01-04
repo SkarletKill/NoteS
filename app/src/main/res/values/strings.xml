@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">NoteS</string>
+    <string name="action_settings">Settings</string>
+
+    <string-array name="categories">
+        <item>games</item>
+        <item>tasks</item>
+    </string-array>
+</resources>
