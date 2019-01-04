@@ -80,6 +80,7 @@
         android:width="120sp"
         android:background="@drawable/buttons_green"
         android:fontFamily="monospace"
+        android:onClick="onConfirmClick"
         android:text="@string/confirm"
         android:textColor="@android:color/white"
         android:textSize="18sp"

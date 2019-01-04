@@ -20,4 +20,5 @@
         <item>My favorite RPG games</item>
         <item>My tasks which I will must to do</item>
     </string-array>
+    <string name="title_activity_record">RecordActivity</string>
 </resources>

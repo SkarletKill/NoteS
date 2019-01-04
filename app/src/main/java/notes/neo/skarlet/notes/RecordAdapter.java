@@ -9,28 +9,28 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class CategoryAdapter extends BaseAdapter {
+public class RecordAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
-    private List<String> categories;
-    private List<String> prices;
+    private List<String> records;
     private List<String> descriptions;
+    private List<String> marks;
 
-    public CategoryAdapter(Context c, List<String> categories, List<String> descriptions, List<String> prices) {
+    public RecordAdapter(Context c, List<String> records, List<String> descriptions, List<String> marks) {
         this.mInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.categories = categories;
+        this.records = records;
         this.descriptions = descriptions;
-        this.prices = prices;
+        this.marks = marks;
     }
 
     @Override
     public int getCount() {
-        return categories.size();
+        return records.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return categories.get(i);
+        return records.get(i);
     }
 
     @Override
@@ -41,18 +41,18 @@ public class CategoryAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
 
-        View v = mInflater.inflate(R.layout.categories_listview_datail, null);
-        TextView nameTextView = (TextView) v.findViewById(R.id.categoryName);
-        TextView descriptionTextView = (TextView) v.findViewById(R.id.categoryDescriprion);
-        TextView priceTextView = (TextView) v.findViewById(R.id.categoryPrice);
+        View v = mInflater.inflate(R.layout.records_listview_detail, null);
+        TextView nameTextView = (TextView) v.findViewById(R.id.recordName);
+        TextView descriptionTextView = (TextView) v.findViewById(R.id.recordDescription);
+        TextView markTextView = (TextView) v.findViewById(R.id.recordMark);
 
-        String name = categories.get(i);
+        String name = records.get(i);
         String desc = descriptions.get(i);
-        String cost = prices.get(i);
+        String mark = marks.get(i);
 
         nameTextView.setText(name);
         descriptionTextView.setText(desc);
-        priceTextView.setText(cost);
+        markTextView.setText(mark);
 
         return v;
     }
