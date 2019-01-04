@@ -1,5 +1,6 @@
 package notes.neo.skarlet.notes;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,9 +13,15 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-public class CategotyActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class CategoryActivity extends AppCompatActivity {
     private ListView categoriesListView;
-    private String[] categories;
+    private List<String> categories;
+    private List<String> prices;
+    private List<String> descriptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,16 +34,22 @@ public class CategotyActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(CategoryActivity.this, NewCategoryActivity.class);
+                startActivity(intent);
             }
         });
 
         Resources res = getResources();
         categoriesListView = (ListView) findViewById(R.id.categories);
-        categories = res.getStringArray(R.array.categories);
+        categories = new ArrayList<>();
+        categories.addAll(Arrays.asList(res.getStringArray(R.array.categories)));
+        descriptions = new ArrayList<>();
+        descriptions.addAll(Arrays.asList(res.getStringArray(R.array.descriptions)));
+        prices = new ArrayList<>();
+        prices.addAll(Arrays.asList(res.getStringArray(R.array.prices)));
 
-        categoriesListView.setAdapter(new ArrayAdapter<String>(this, R.layout.categories_listview_datail, categories));
+        CategoryAdapter categoryAdapter = new CategoryAdapter(this, categories, descriptions, prices);
+        categoriesListView.setAdapter(categoryAdapter);
     }
 
     @Override
