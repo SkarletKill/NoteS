@@ -49,6 +49,18 @@
             android:hint="@string/description"
             android:padding="10sp"
             android:textColor="@color/colorAccent" />
+
+        <EditText
+            android:id="@+id/newCategoryPriority"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25sp"
+            android:background="@drawable/fields"
+            android:ems="10"
+            android:hint="@string/priority"
+            android:inputType="number"
+            android:padding="10sp"
+            android:textColor="@color/colorAccent" />
     </LinearLayout>
 
     <Button

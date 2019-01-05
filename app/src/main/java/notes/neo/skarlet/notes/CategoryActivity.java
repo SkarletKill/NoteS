@@ -1,7 +1,10 @@
 package notes.neo.skarlet.notes;
 
+import android.annotation.TargetApi;
+import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -13,17 +16,17 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import notes.neo.skarlet.notes.adapters.CategoryAdapter;
+import notes.neo.skarlet.notes.database.entity.Category;
+import notes.neo.skarlet.notes.database.NotesDatabase;
 
 public class CategoryActivity extends AppCompatActivity {
     private ListView categoriesListView;
-    private List<String> categories;
-    private List<String> prices;
-    private List<String> descriptions;
+    private List<Category> categories;
 
+    @TargetApi(Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,16 +43,15 @@ public class CategoryActivity extends AppCompatActivity {
             }
         });
 
+        NotesDatabase db = Room.databaseBuilder(getApplicationContext(), NotesDatabase.class, "notes_database")
+                .allowMainThreadQueries().build();
+
         Resources res = getResources();
         categoriesListView = (ListView) findViewById(R.id.categories);
         categories = new ArrayList<>();
-        categories.addAll(Arrays.asList(res.getStringArray(R.array.categories)));
-        descriptions = new ArrayList<>();
-        descriptions.addAll(Arrays.asList(res.getStringArray(R.array.descriptions)));
-        prices = new ArrayList<>();
-        prices.addAll(Arrays.asList(res.getStringArray(R.array.prices)));
+        categories.addAll(db.categoryDao().getAll());
 
-        CategoryAdapter categoryAdapter = new CategoryAdapter(this, categories, descriptions, prices);
+        CategoryAdapter categoryAdapter = new CategoryAdapter(this, categories);
         categoriesListView.setAdapter(categoryAdapter);
         categoriesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

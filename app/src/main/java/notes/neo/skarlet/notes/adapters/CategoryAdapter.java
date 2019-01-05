@@ -10,19 +10,16 @@ import android.widget.TextView;
 import java.util.List;
 
 import notes.neo.skarlet.notes.R;
+import notes.neo.skarlet.notes.database.entity.Category;
 
 public class CategoryAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
-    private List<String> categories;
-    private List<String> prices;
-    private List<String> descriptions;
+    private List<Category> categories;
 
-    public CategoryAdapter(Context c, List<String> categories, List<String> descriptions, List<String> prices) {
+    public CategoryAdapter(Context c, List<Category> categories) {
         this.mInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.categories = categories;
-        this.descriptions = descriptions;
-        this.prices = prices;
     }
 
     @Override
@@ -48,13 +45,13 @@ public class CategoryAdapter extends BaseAdapter {
         TextView descriptionTextView = (TextView) v.findViewById(R.id.categoryDescriprion);
         TextView priceTextView = (TextView) v.findViewById(R.id.categoryPrice);
 
-        String name = categories.get(i);
-        String desc = descriptions.get(i);
-        String cost = prices.get(i);
+        String name = categories.get(i).getName();
+        String description = categories.get(i).getDescription();
+        String priority = categories.get(i).getPriority();
 
         nameTextView.setText(name);
-        descriptionTextView.setText(desc);
-        priceTextView.setText(cost);
+        descriptionTextView.setText(description);
+        priceTextView.setText(priority);
 
         return v;
     }

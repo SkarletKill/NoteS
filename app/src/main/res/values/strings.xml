@@ -21,4 +21,5 @@
         <item>My tasks which I will must to do</item>
     </string-array>
     <string name="title_activity_record">RecordActivity</string>
+    <string name="priority">priority</string>
 </resources>
