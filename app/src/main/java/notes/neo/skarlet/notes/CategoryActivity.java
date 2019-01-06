@@ -116,7 +116,14 @@ public class CategoryActivity extends AppCompatActivity {
                     break;
                 case 1:
                     // delete
-                    System.out.println();
+                    NotesDatabase db = Room.databaseBuilder(getApplicationContext(), NotesDatabase.class, DBTables.DB_NAME)
+                            .allowMainThreadQueries().build();
+                    db.categoryDao().delete(categories.get(position));
+
+                    Intent intent = new Intent(CategoryActivity.this, CategoryActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.putExtra("categoryId", categories.get(position).getId());
+                    startActivity(intent);
                     break;
             }
             // false : close the menu; true : not close the menu

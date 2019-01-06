@@ -3,12 +3,18 @@ package notes.neo.skarlet.notes.database.entity;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 
 import notes.neo.skarlet.notes.database.constants.DBFields;
 import notes.neo.skarlet.notes.database.constants.DBTables;
 
-@Entity(tableName = DBTables.GENRE, foreignKeys = @ForeignKey(entity = Category.class, parentColumns = DBFields.ID, childColumns = DBFields.CATEGORY_ID))
+import static android.arch.persistence.room.ForeignKey.CASCADE;
+
+@Entity(tableName = DBTables.GENRE,
+        foreignKeys = @ForeignKey(entity = Category.class, parentColumns = DBFields.ID, childColumns = DBFields.CATEGORY_ID,
+                onUpdate = CASCADE, onDelete = CASCADE),
+        indices = @Index(value = DBFields.CATEGORY_ID))
 public class Genre {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = DBFields.ID)

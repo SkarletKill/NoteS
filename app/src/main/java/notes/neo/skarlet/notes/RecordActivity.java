@@ -134,7 +134,14 @@ public class RecordActivity extends AppCompatActivity
                     break;
                 case 1:
                     // delete
-                    System.out.println();
+                    NotesDatabase db = Room.databaseBuilder(getApplicationContext(), NotesDatabase.class, DBTables.DB_NAME)
+                            .allowMainThreadQueries().build();
+                    db.recordDao().delete(records.get(position));
+
+                    Intent intent = new Intent(RecordActivity.this, RecordActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.putExtra("categoryId", categoryId);
+                    startActivity(intent);
                     break;
             }
             // false : close the menu; true : not close the menu
