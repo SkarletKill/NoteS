@@ -80,8 +80,8 @@ public class RecordActivity extends AppCompatActivity
             List<RecCat> recCats = new ArrayList<>(db.recCatDao().getByRecordId(records.get(i).getId()));
             List<String> genres = new ArrayList<>();
             recCats.forEach(rc -> genres.add(db.genreDao().getById(rc.getGenreId()).getName()));
-            String string = genres.spliterator().toString();
-            recordDescriptions.add(string);
+            String description = stringJoiner(", ", genres);
+            recordDescriptions.add(description);
         }
 
         RecordAdapter recordAdapter = new RecordAdapter(this, records, recordDescriptions);
@@ -200,5 +200,14 @@ public class RecordActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    private String stringJoiner(String delimiter, List<String> array) {
+        if (array.isEmpty()) return "";
+        StringBuilder builder = new StringBuilder();
+        array.forEach(str -> builder.append(str).append(delimiter));
+        String joined = builder.substring(0, builder.length() - delimiter.length());
+        return joined;
     }
 }

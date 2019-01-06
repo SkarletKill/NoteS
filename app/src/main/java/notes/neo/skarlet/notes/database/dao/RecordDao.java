@@ -18,6 +18,9 @@ public interface RecordDao {
     @Query(DBQuery.SELECT_ALL_RECORDS + " WHERE id = :id")
     Record getById(Integer id);
 
+    @Query(DBQuery.SELECT_ALL_RECORDS + " WHERE name = :name")
+    List<Record> getByName(String name);
+
     @Insert
     void insert(Record record);
 
