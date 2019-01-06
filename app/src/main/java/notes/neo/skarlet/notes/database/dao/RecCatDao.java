@@ -18,8 +18,8 @@ public interface RecCatDao {
     @Query(DBQuery.SELECT_ALL_RECCAT + " WHERE id = :id")
     RecCat getById(Integer id);
 
-    @Query(DBQuery.SELECT_ALL_RECCAT + " WHERE rec_id = :id")
-    List<RecCat> getByRecordId(Integer id);
+    @Query(DBQuery.SELECT_ALL_RECCAT + " WHERE rec_id = :recordId")
+    List<RecCat> getByRecordId(Integer recordId);
 
     @Insert
     void insert(RecCat rec_cat);

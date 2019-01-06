@@ -9,7 +9,7 @@
     tools:context=".CategoryActivity"
     tools:showIn="@layout/activity_category">
 
-    <ListView
+    <com.baoyz.swipemenulistview.SwipeMenuListView
         android:id="@+id/categories"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

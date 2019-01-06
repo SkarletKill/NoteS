@@ -10,19 +10,18 @@ import android.widget.TextView;
 import java.util.List;
 
 import notes.neo.skarlet.notes.R;
+import notes.neo.skarlet.notes.database.entity.Record;
 
 public class RecordAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
-    private List<String> records;
+    private List<Record> records;
     private List<String> descriptions;
-    private List<String> marks;
 
-    public RecordAdapter(Context c, List<String> records, List<String> descriptions, List<String> marks) {
+    public RecordAdapter(Context c, List<Record> records, List<String> descriptions) {
         this.mInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.records = records;
         this.descriptions = descriptions;
-        this.marks = marks;
     }
 
     @Override
@@ -48,9 +47,9 @@ public class RecordAdapter extends BaseAdapter {
         TextView descriptionTextView = (TextView) v.findViewById(R.id.recordDescription);
         TextView markTextView = (TextView) v.findViewById(R.id.recordMark);
 
-        String name = records.get(i);
+        String name = records.get(i).getName();
         String desc = descriptions.get(i);
-        String mark = marks.get(i);
+        String mark = String.valueOf(records.get(i).getRating());
 
         nameTextView.setText(name);
         descriptionTextView.setText(desc);

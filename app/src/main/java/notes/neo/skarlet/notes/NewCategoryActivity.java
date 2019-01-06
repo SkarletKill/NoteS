@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import notes.neo.skarlet.notes.database.entity.Category;
@@ -40,6 +41,7 @@ public class NewCategoryActivity extends AppCompatActivity {
         db.categoryDao().insert(category);
 
         Intent intent = new Intent(this, CategoryActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 }

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark"
-    tools:context=".NewCategoryActivity">
+    tools:context=".NewGenreActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,68 +13,53 @@
         android:orientation="vertical"
         android:layout_marginLeft="40sp"
         android:layout_marginRight="40sp"
-        android:layout_marginBottom="80sp">
+        android:layout_marginBottom="90sp">
 
         <TextView
-            android:id="@+id/newRecord"
+            android:id="@+id/newGenre"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10sp"
             android:layout_marginTop="20sp"
             android:ems="10"
             android:padding="10sp"
-            android:text="Add a new record"
+            android:text="Add a new genre"
             android:textAlignment="center"
             android:textColor="@color/colorWhite"
-            android:textSize="30sp" />
+            android:textSize="28sp" />
 
         <EditText
-            android:id="@+id/newRecordName"
+            android:id="@+id/newGenreName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20sp"
+            android:layout_marginTop="25sp"
             android:background="@drawable/fields"
             android:ems="10"
             android:hint="@string/name"
             android:padding="10sp"
             android:textColor="@color/colorAccent" />
 
-        <Spinner
-            android:id="@+id/spinnerGenres"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25sp" />
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/textGenres"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="25sp"
-            android:orientation="horizontal">
+            android:text="Existing genres"
+            android:textAlignment="center"
+            android:textColor="@color/colorWhite"
+            android:textSize="18sp" />
 
-            <RatingBar
-                android:id="@+id/ratingBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:isIndicator="false"
-                android:numStars="5"
-                android:rating="1"
-                android:stepSize="0.5" />
+        <ListView
+            android:id="@+id/listOfGenres"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10sp" />
 
-            <TextView
-                android:id="@+id/ratingMark"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:text="0"
-                android:textAlignment="center"
-                android:textColor="@color/colorAccent"
-                android:textSize="24sp" />
-        </LinearLayout>
 
     </LinearLayout>
 
     <Button
-        android:id="@+id/btn_cancelAddCat"
+        android:id="@+id/btn_cancelAddGenre"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="30dp"
@@ -82,7 +67,6 @@
         android:width="120sp"
         android:background="@drawable/buttons_red"
         android:fontFamily="monospace"
-        android:onClick="onCancelClick"
         android:text="@string/cancel"
         android:textColor="@android:color/white"
         android:textSize="18sp"
@@ -90,18 +74,18 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/btn_confirmAddCat"
+        android:id="@+id/btn_confirmAddGenre"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="30dp"
-        android:layout_marginEnd="40sp"
+        android:layout_marginEnd="40dp"
         android:width="120sp"
         android:background="@drawable/buttons_green"
         android:fontFamily="monospace"
-        android:onClick="onConfirmClick"
         android:text="@string/confirm"
         android:textColor="@android:color/white"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
 </android.support.constraint.ConstraintLayout>

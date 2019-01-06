@@ -12,8 +12,8 @@ import notes.neo.skarlet.notes.database.entity.Record;
 
 @Dao
 public interface RecordDao {
-    @Query(DBQuery.SELECT_ALL_RECORDS)
-    List<Record> getAll();
+    @Query(DBQuery.SELECT_ALL_RECORDS + " WHERE cat_id = :categoryId")
+    List<Record> getAllInCategory(Integer categoryId);
 
     @Query(DBQuery.SELECT_ALL_RECORDS + " WHERE id = :id")
     Record getById(Integer id);

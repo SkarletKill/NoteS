@@ -43,6 +43,14 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity android:name=".NewGenreActivity" />
+        <activity android:name=".TestActivity">
+            <intent-filter>
+                <action android:name=".TestActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

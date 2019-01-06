@@ -18,6 +18,9 @@ public interface GenreDao {
     @Query(DBQuery.SELECT_ALL_GENRES + " WHERE id = :id")
     Genre getById(Integer id);
 
+    @Query(DBQuery.SELECT_ALL_GENRES + " WHERE cat_id = :categoryId")
+    List<Genre> getByCategoryId(Integer categoryId);
+
     @Insert
     void insert(Genre genre);
 
