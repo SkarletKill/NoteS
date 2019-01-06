@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 
+import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
@@ -25,6 +26,8 @@ import notes.neo.skarlet.notes.adapters.CategoryAdapter;
 import notes.neo.skarlet.notes.database.constants.DBTables;
 import notes.neo.skarlet.notes.database.entity.Category;
 import notes.neo.skarlet.notes.database.NotesDatabase;
+import notes.neo.skarlet.notes.entity.Constants;
+import notes.neo.skarlet.notes.entity.CreationType;
 
 public class CategoryActivity extends AppCompatActivity {
     private SwipeMenuListView categoriesListView;
@@ -39,16 +42,11 @@ public class CategoryActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(CategoryActivity.this, NewCategoryActivity.class);
-                startActivity(intent);
-            }
+        fab.setOnClickListener((View view) -> {
+            Intent intent = new Intent(CategoryActivity.this, NewCategoryActivity.class);
+            intent.putExtra(Constants.CREATION_TYPE, CreationType.CREATION.name());
+            startActivity(intent);
         });
-
-//        Intent intent = new Intent(this, TestActivity.class);
-//        startActivity(intent);
 
         NotesDatabase db = Room.databaseBuilder(getApplicationContext(), NotesDatabase.class, DBTables.DB_NAME)
                 .allowMainThreadQueries().build();
@@ -59,13 +57,10 @@ public class CategoryActivity extends AppCompatActivity {
 
         CategoryAdapter categoryAdapter = new CategoryAdapter(this, categories);
         categoriesListView.setAdapter(categoryAdapter);
-        categoriesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(CategoryActivity.this, RecordActivity.class);
-                intent.putExtra("categoryId", categories.get(i).getId());
-                startActivity(intent);
-            }
+        categoriesListView.setOnItemClickListener((AdapterView<?> adapterView, View view, int i, long l) -> {
+            Intent intent = new Intent(CategoryActivity.this, RecordActivity.class);
+            intent.putExtra("categoryId", categories.get(i).getId());
+            startActivity(intent);
         });
 
         SwipeMenuCreator creator = getSwipeMenuCreator();
@@ -77,12 +72,11 @@ public class CategoryActivity extends AppCompatActivity {
 
     @NonNull
     private SwipeMenuCreator getSwipeMenuCreator() {
-        return menu -> {
+        return (SwipeMenu menu) -> {
             int buttonsWidth = 220;
 
             // create "open" item
-            SwipeMenuItem openItem = new SwipeMenuItem(
-                    getApplicationContext());
+            SwipeMenuItem openItem = new SwipeMenuItem(getApplicationContext());
             // set item background
             openItem.setBackground(R.color.green);
             // set item width
@@ -93,8 +87,7 @@ public class CategoryActivity extends AppCompatActivity {
             menu.addMenuItem(openItem);
 
             // create "delete" item
-            SwipeMenuItem deleteItem = new SwipeMenuItem(
-                    getApplicationContext());
+            SwipeMenuItem deleteItem = new SwipeMenuItem(getApplicationContext());
             // set item background
             deleteItem.setBackground(R.color.red);
             // set item width
@@ -108,10 +101,15 @@ public class CategoryActivity extends AppCompatActivity {
 
     @NonNull
     private SwipeMenuListView.OnMenuItemClickListener getOnSwipeMenuItemClickListener() {
-        return (position, menu, index) -> {
+        return (int position, SwipeMenu menu, int index) -> {
+            Intent intent;
             switch (index) {
                 case 0:
                     // open
+                    intent = new Intent(CategoryActivity.this, NewCategoryActivity.class);
+                    intent.putExtra(Constants.CREATION_TYPE, CreationType.EDIT.name());
+                    intent.putExtra(Constants.CATEGORY, categories.get(position).getId());
+                    startActivity(intent);
                     System.out.println();
                     break;
                 case 1:
@@ -120,7 +118,7 @@ public class CategoryActivity extends AppCompatActivity {
                             .allowMainThreadQueries().build();
                     db.categoryDao().delete(categories.get(position));
 
-                    Intent intent = new Intent(CategoryActivity.this, CategoryActivity.class);
+                    intent = new Intent(CategoryActivity.this, CategoryActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent.putExtra("categoryId", categories.get(position).getId());
                     startActivity(intent);

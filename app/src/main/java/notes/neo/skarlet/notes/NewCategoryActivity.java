@@ -7,11 +7,20 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
+import notes.neo.skarlet.notes.database.constants.DBTables;
 import notes.neo.skarlet.notes.database.entity.Category;
 import notes.neo.skarlet.notes.database.NotesDatabase;
+import notes.neo.skarlet.notes.database.entity.Record;
+import notes.neo.skarlet.notes.entity.Constants;
+import notes.neo.skarlet.notes.entity.CreationType;
 
 public class NewCategoryActivity extends AppCompatActivity {
+    private Bundle extras;
+    private CreationType creationType;
+
+    private TextView title;
     private EditText name;
     private EditText description;
     private EditText priority;
@@ -21,9 +30,28 @@ public class NewCategoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category_new);
 
+        extras = getIntent().getExtras();
+        creationType = CreationType.get(extras.getString(Constants.CREATION_TYPE));
+
+        title = (TextView) findViewById(R.id.newCategory);
+        if (creationType.equals(CreationType.CREATION))
+            title.setText(Constants.ADD_CATEGORY);
+        else if (creationType.equals(CreationType.EDIT))
+            title.setText(Constants.EDIT_CATEGORY);
+
         name = (EditText) findViewById(R.id.newCategoryName);
         description = (EditText) findViewById(R.id.newCategoryDescription);
         priority = (EditText) findViewById(R.id.newCategoryPriority);
+
+        if (creationType.equals(CreationType.EDIT)) {
+            NotesDatabase db = Room.databaseBuilder(getApplicationContext(), NotesDatabase.class, DBTables.DB_NAME)
+                    .allowMainThreadQueries().build();
+
+            Category editableCategory = db.categoryDao().getById(extras.getInt(Constants.CATEGORY));
+            name.setText(editableCategory.getName());
+            description.setText(editableCategory.getDescription());
+            priority.setText(String.valueOf(editableCategory.getPriority()));
+        }
     }
 
     public void onCancelClick(View view) {
@@ -31,14 +59,22 @@ public class NewCategoryActivity extends AppCompatActivity {
     }
 
     public void onConfirmClick(View view) {
-        NotesDatabase db = Room.databaseBuilder(getApplicationContext(), NotesDatabase.class, "notes_database")
+        NotesDatabase db = Room.databaseBuilder(getApplicationContext(), NotesDatabase.class, DBTables.DB_NAME)
                 .allowMainThreadQueries().build();
         String name = String.valueOf(this.name.getText());
         String description = String.valueOf(this.description.getText());
-        String priority = String.valueOf(this.priority.getText());
+        Integer priority = Integer.parseInt(String.valueOf(this.priority.getText()));
         Category category = new Category(name, description, priority);
 
-        db.categoryDao().insert(category);
+        if (creationType.equals(CreationType.CREATION))
+            db.categoryDao().insert(category);
+        else if (creationType.equals(CreationType.EDIT)) {
+            Category categoryWithId = db.categoryDao().getById(extras.getInt(Constants.CATEGORY));
+            categoryWithId.setName(name);
+            categoryWithId.setDescription(description);
+            categoryWithId.setPriority(priority);
+            db.categoryDao().update(categoryWithId);
+        }
 
         Intent intent = new Intent(this, CategoryActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

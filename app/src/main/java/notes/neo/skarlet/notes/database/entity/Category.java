@@ -20,9 +20,9 @@ public class Category {
     private String description;
 
     @ColumnInfo(name = DBFields.PRIORITY)
-    private String priority;
+    private Integer priority;
 
-    public Category(String name, String description, String priority) {
+    public Category(String name, String description, Integer priority) {
         this.name = name;
         this.description = description;
         this.priority = priority;
@@ -40,7 +40,19 @@ public class Category {
         return description;
     }
 
-    public String getPriority() {
+    public Integer getPriority() {
         return priority;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
     }
 }

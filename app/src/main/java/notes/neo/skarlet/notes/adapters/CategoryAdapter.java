@@ -42,16 +42,16 @@ public class CategoryAdapter extends BaseAdapter {
 
         View v = mInflater.inflate(R.layout.categories_listview_datail, null);
         TextView nameTextView = (TextView) v.findViewById(R.id.categoryName);
-        TextView descriptionTextView = (TextView) v.findViewById(R.id.categoryDescriprion);
-        TextView priceTextView = (TextView) v.findViewById(R.id.categoryPrice);
+        TextView descriptionTextView = (TextView) v.findViewById(R.id.categoryDescription);
+        TextView priceTextView = (TextView) v.findViewById(R.id.categoryPriority);
 
         String name = categories.get(i).getName();
         String description = categories.get(i).getDescription();
-        String priority = categories.get(i).getPriority();
+        Integer priority = categories.get(i).getPriority();
 
         nameTextView.setText(name);
         descriptionTextView.setText(description);
-        priceTextView.setText(priority);
+        priceTextView.setText(String.valueOf(priority));
 
         return v;
     }

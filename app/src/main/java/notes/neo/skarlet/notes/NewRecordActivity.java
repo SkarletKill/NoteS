@@ -28,6 +28,7 @@ import notes.neo.skarlet.notes.entity.CreationType;
 import notes.neo.skarlet.notes.entity.GenreItem;
 
 public class NewRecordActivity extends AppCompatActivity {
+    private Bundle extras;
     private Integer categoryId;
     private CreationType creationType;
 
@@ -44,29 +45,30 @@ public class NewRecordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record_new);
 
-        categoryId = getIntent().getExtras().getInt(Constants.CATEGORY_ID);
-        creationType = CreationType.get(getIntent().getExtras().getString(Constants.CREATION_TYPE));
+        extras = getIntent().getExtras();
+        categoryId = extras.getInt(Constants.CATEGORY_ID);
+        creationType = CreationType.get(extras.getString(Constants.CREATION_TYPE));
+
+        NotesDatabase db = Room.databaseBuilder(getApplicationContext(), NotesDatabase.class, DBTables.DB_NAME)
+                .allowMainThreadQueries().build();
 
         title = (TextView) findViewById(R.id.newRecord);
         if (creationType.equals(CreationType.CREATION))
             title.setText(Constants.ADD_RECORD);
         else if (creationType.equals(CreationType.EDIT))
             title.setText(Constants.EDIT_RECORD);
+
         name = (EditText) findViewById(R.id.newRecordName);
+        if (creationType.equals(CreationType.EDIT))
+            name.setText(db.recordDao().getById(extras.getInt(Constants.RECORD)).getName());
+
         ratingBar = (RatingBar) findViewById(R.id.ratingBar);
         ratingMark = (TextView) findViewById(R.id.ratingMark);
 
-        ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-            @Override
-            public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
-                ratingMark.setText(String.valueOf((int) (v * 2)));
-            }
-        });
+        ratingBar.setOnRatingBarChangeListener((RatingBar ratingBar, float v, boolean b) ->
+                ratingMark.setText(String.valueOf((int) (v * 2))));
 
         spinnerGenres = (Spinner) findViewById(R.id.spinnerGenres);
-
-        NotesDatabase db = Room.databaseBuilder(getApplicationContext(), NotesDatabase.class, DBTables.DB_NAME)
-                .allowMainThreadQueries().build();
 
         genreList = db.genreDao().getByCategoryId(categoryId);
 
@@ -94,7 +96,7 @@ public class NewRecordActivity extends AppCompatActivity {
         if (creationType.equals(CreationType.CREATION))
             db.recordDao().insert(record);
         else if (creationType.equals(CreationType.EDIT)) {
-            Record recordWithId = db.recordDao().getById(getIntent().getExtras().getInt(Constants.RECORD));
+            Record recordWithId = db.recordDao().getById(extras.getInt(Constants.RECORD));
             recordWithId.setName(name);
             recordWithId.setRating(mark);
             db.recordDao().update(recordWithId);

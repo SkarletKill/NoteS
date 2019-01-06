@@ -22,6 +22,7 @@ import notes.neo.skarlet.notes.database.entity.Genre;
 import notes.neo.skarlet.notes.entity.Constants;
 
 public class NewGenreActivity extends AppCompatActivity {
+    private Bundle extras;
     private Integer categoryId;
     private EditText name;
     private ListView listOfGenres;
@@ -39,9 +40,9 @@ public class NewGenreActivity extends AppCompatActivity {
         NotesDatabase db = Room.databaseBuilder(getApplicationContext(), NotesDatabase.class, DBTables.DB_NAME)
                 .allowMainThreadQueries().build();
 
-        List<Genre> genreList = new ArrayList<>();
-        categoryId = getIntent().getExtras().getInt(Constants.CATEGORY_ID);
-        genreList.addAll(db.genreDao().getByCategoryId(categoryId));
+        extras = getIntent().getExtras();
+        categoryId = extras.getInt(Constants.CATEGORY_ID);
+        List<Genre> genreList = new ArrayList<>(db.genreDao().getByCategoryId(categoryId));
 
         genres = genreList.stream().map(Genre::getName).collect(Collectors.toCollection(ArrayList::new));
 
@@ -56,7 +57,7 @@ public class NewGenreActivity extends AppCompatActivity {
         NotesDatabase db = Room.databaseBuilder(getApplicationContext(), NotesDatabase.class, "notes_database")
                 .allowMainThreadQueries().build();
         String name = String.valueOf(this.name.getText());
-        Genre genre = new Genre(getIntent().getExtras().getInt(Constants.CATEGORY_ID), name);
+        Genre genre = new Genre(extras.getInt(Constants.CATEGORY_ID), name);
 
         db.genreDao().insert(genre);
 

@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
@@ -52,14 +53,11 @@ public class RecordActivity extends AppCompatActivity
         categoryId = getIntent().getExtras().getInt(Constants.CATEGORY_ID);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(RecordActivity.this, NewRecordActivity.class);
-                intent.putExtra(Constants.CATEGORY_ID, categoryId);
-                intent.putExtra(Constants.CREATION_TYPE, CreationType.CREATION.name());
-                startActivity(intent);
-            }
+        fab.setOnClickListener((View view) -> {
+            Intent intent = new Intent(RecordActivity.this, NewRecordActivity.class);
+            intent.putExtra(Constants.CATEGORY_ID, categoryId);
+            intent.putExtra(Constants.CREATION_TYPE, CreationType.CREATION.name());
+            startActivity(intent);
         });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -98,7 +96,7 @@ public class RecordActivity extends AppCompatActivity
 
     @NonNull
     private SwipeMenuCreator getSwipeMenuCreator() {
-        return menu -> {
+        return (SwipeMenu menu) -> {
             int buttonsWidth = 180;
             // create "open" item
             SwipeMenuItem openItem = new SwipeMenuItem(
@@ -128,7 +126,7 @@ public class RecordActivity extends AppCompatActivity
 
     @NonNull
     private SwipeMenuListView.OnMenuItemClickListener getOnSwipeMenuItemClickListener() {
-        return (position, menu, index) -> {
+        return (int position, SwipeMenu menu, int index) -> {
             Intent intent;
             switch (index) {
                 case 0:
@@ -138,7 +136,6 @@ public class RecordActivity extends AppCompatActivity
                     intent.putExtra(Constants.CREATION_TYPE, CreationType.EDIT.name());
                     intent.putExtra(Constants.RECORD, records.get(position).getId());
                     startActivity(intent);
-                    System.out.println();
                     break;
                 case 1:
                     // delete
