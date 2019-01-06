@@ -31,6 +31,7 @@ import notes.neo.skarlet.notes.database.constants.DBTables;
 import notes.neo.skarlet.notes.database.entity.RecCat;
 import notes.neo.skarlet.notes.database.entity.Record;
 import notes.neo.skarlet.notes.entity.Constants;
+import notes.neo.skarlet.notes.entity.CreationType;
 
 public class RecordActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -56,6 +57,7 @@ public class RecordActivity extends AppCompatActivity
             public void onClick(View view) {
                 Intent intent = new Intent(RecordActivity.this, NewRecordActivity.class);
                 intent.putExtra(Constants.CATEGORY_ID, categoryId);
+                intent.putExtra(Constants.CREATION_TYPE, CreationType.CREATION.name());
                 startActivity(intent);
             }
         });
@@ -127,9 +129,15 @@ public class RecordActivity extends AppCompatActivity
     @NonNull
     private SwipeMenuListView.OnMenuItemClickListener getOnSwipeMenuItemClickListener() {
         return (position, menu, index) -> {
+            Intent intent;
             switch (index) {
                 case 0:
                     // open
+                    intent = new Intent(RecordActivity.this, NewRecordActivity.class);
+                    intent.putExtra(Constants.CATEGORY_ID, categoryId);
+                    intent.putExtra(Constants.CREATION_TYPE, CreationType.EDIT.name());
+                    intent.putExtra(Constants.RECORD, records.get(position).getId());
+                    startActivity(intent);
                     System.out.println();
                     break;
                 case 1:
@@ -138,7 +146,7 @@ public class RecordActivity extends AppCompatActivity
                             .allowMainThreadQueries().build();
                     db.recordDao().delete(records.get(position));
 
-                    Intent intent = new Intent(RecordActivity.this, RecordActivity.class);
+                    intent = new Intent(RecordActivity.this, RecordActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent.putExtra("categoryId", categoryId);
                     startActivity(intent);

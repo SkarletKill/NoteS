@@ -20,21 +20,24 @@ import java.util.stream.Collectors;
 import notes.neo.skarlet.notes.adapters.GenreItemAdapter;
 import notes.neo.skarlet.notes.database.NotesDatabase;
 import notes.neo.skarlet.notes.database.constants.DBTables;
-import notes.neo.skarlet.notes.database.entity.Category;
 import notes.neo.skarlet.notes.database.entity.Genre;
 import notes.neo.skarlet.notes.database.entity.RecCat;
 import notes.neo.skarlet.notes.database.entity.Record;
 import notes.neo.skarlet.notes.entity.Constants;
+import notes.neo.skarlet.notes.entity.CreationType;
 import notes.neo.skarlet.notes.entity.GenreItem;
 
 public class NewRecordActivity extends AppCompatActivity {
     private Integer categoryId;
+    private CreationType creationType;
+
+    private TextView title;
     private EditText name;
     private Spinner spinnerGenres;
     private RatingBar ratingBar;
     private TextView ratingMark;
 
-    List<Genre> genreList;
+    private List<Genre> genreList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +45,13 @@ public class NewRecordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_record_new);
 
         categoryId = getIntent().getExtras().getInt(Constants.CATEGORY_ID);
+        creationType = CreationType.get(getIntent().getExtras().getString(Constants.CREATION_TYPE));
 
+        title = (TextView) findViewById(R.id.newRecord);
+        if (creationType.equals(CreationType.CREATION))
+            title.setText(Constants.ADD_RECORD);
+        else if (creationType.equals(CreationType.EDIT))
+            title.setText(Constants.EDIT_RECORD);
         name = (EditText) findViewById(R.id.newRecordName);
         ratingBar = (RatingBar) findViewById(R.id.ratingBar);
         ratingMark = (TextView) findViewById(R.id.ratingMark);
@@ -82,13 +91,30 @@ public class NewRecordActivity extends AppCompatActivity {
         String name = String.valueOf(this.name.getText());
         Integer mark = Integer.parseInt(String.valueOf(this.ratingMark.getText()));
         Record record = new Record(categoryId, name, mark);
-        db.recordDao().insert(record);
+        if (creationType.equals(CreationType.CREATION))
+            db.recordDao().insert(record);
+        else if (creationType.equals(CreationType.EDIT)) {
+            Record recordWithId = db.recordDao().getById(getIntent().getExtras().getInt(Constants.RECORD));
+            recordWithId.setName(name);
+            recordWithId.setRating(mark);
+            db.recordDao().update(recordWithId);
+        }
 
         Record recordWithId = db.recordDao().getByName(record.getName())
-                .stream().filter(r -> record.getRating().equals(r.getRating())).findAny().get();
+                .stream().filter(r -> record.getRating().equals(r.getRating()))
+                .findAny().get();
         List<GenreItem> genreItems = retrieveAllItems(spinnerGenres)
                 .stream().filter(GenreItem::isSelected).collect(Collectors.toCollection(ArrayList::new));
 
+        // clear all genres for record
+        if (creationType.equals(CreationType.EDIT)) {
+            List<RecCat> recCats = db.recCatDao().getByRecordId(recordWithId.getId());
+            for (RecCat recCat : recCats) {
+                db.recCatDao().delete(recCat);
+            }
+        }
+
+        // add genres for record
         for (GenreItem genreItem : genreItems) {
             Integer genreId = findGenreByName(genreItem.getTitle()).getId();
 

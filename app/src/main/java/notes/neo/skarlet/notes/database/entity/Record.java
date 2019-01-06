@@ -50,4 +50,12 @@ public class Record {
     public Integer getRating() {
         return rating;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
 }
