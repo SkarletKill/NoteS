@@ -1,5 +1,7 @@
 package notes.neo.skarlet.notes.entity;
 
+import java.util.List;
+
 public interface Constants {
     String CATEGORY_ID = "categoryId";
     String CREATION_TYPE = "creationType";

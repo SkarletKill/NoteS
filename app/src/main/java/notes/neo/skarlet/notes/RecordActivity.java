@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -25,6 +24,8 @@ import com.baoyz.swipemenulistview.SwipeMenuListView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import notes.neo.skarlet.notes.adapters.RecordAdapter;
 import notes.neo.skarlet.notes.database.NotesDatabase;
@@ -33,9 +34,13 @@ import notes.neo.skarlet.notes.database.entity.RecCat;
 import notes.neo.skarlet.notes.database.entity.Record;
 import notes.neo.skarlet.notes.entity.Constants;
 import notes.neo.skarlet.notes.entity.CreationType;
+import notes.neo.skarlet.notes.entity.RecordSort;
+import notes.neo.skarlet.notes.entity.SessionSettings;
 
 public class RecordActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private NotesDatabase db;
+
     private Integer categoryId;
 
     private SwipeMenuListView recordsListView;
@@ -69,20 +74,23 @@ public class RecordActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        NotesDatabase db = Room.databaseBuilder(getApplicationContext(), NotesDatabase.class, DBTables.DB_NAME)
+        db = Room.databaseBuilder(getApplicationContext(), NotesDatabase.class, DBTables.DB_NAME)
                 .allowMainThreadQueries().build();
 
         recordsListView = (SwipeMenuListView) findViewById(R.id.records);
         records = new ArrayList<>();
         records.addAll(db.recordDao().getAllInCategory(categoryId));
-        recordDescriptions = new ArrayList<>();
-        for (int i = 0; i < records.size(); i++) {
-            List<RecCat> recCats = new ArrayList<>(db.recCatDao().getByRecordId(records.get(i).getId()));
-            List<String> genres = new ArrayList<>();
-            recCats.forEach(rc -> genres.add(db.genreDao().getById(rc.getGenreId()).getName()));
-            String description = stringJoiner(", ", genres);
-            recordDescriptions.add(description);
+        if (SessionSettings.recordsSort.equals(RecordSort.BY_NAME)) {
+            records.sort((r1, r2) -> r1.getName().compareTo(r2.getName()));
+        } else if (SessionSettings.recordsSort.equals(RecordSort.BY_RATING)) {
+            records.sort((r1, r2) -> r1.getRating().compareTo(r2.getRating()));
         }
+        if (!SessionSettings.recordsSortingOrder) {
+            records = reverseList(records);
+            recordDescriptions = reverseList(recordDescriptions);
+        }
+
+        createRecordDescriptions();
 
         RecordAdapter recordAdapter = new RecordAdapter(this, records, recordDescriptions);
         recordsListView.setAdapter(recordAdapter);
@@ -92,6 +100,18 @@ public class RecordActivity extends AppCompatActivity
         recordsListView.setMenuCreator(creator);
 
         recordsListView.setOnMenuItemClickListener(getOnSwipeMenuItemClickListener());
+    }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    private void createRecordDescriptions() {
+        recordDescriptions = new ArrayList<>();
+        for (int i = 0; i < records.size(); i++) {
+            List<RecCat> recCats = new ArrayList<>(db.recCatDao().getByRecordId(records.get(i).getId()));
+            List<String> genres = new ArrayList<>();
+            recCats.forEach(rc -> genres.add(db.genreDao().getById(rc.getGenreId()).getName()));
+            String description = stringJoiner(", ", genres);
+            recordDescriptions.add(description);
+        }
     }
 
     @NonNull
@@ -186,6 +206,7 @@ public class RecordActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    @TargetApi(Build.VERSION_CODES.N)
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -193,8 +214,47 @@ public class RecordActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_sort_name) {
-            // Handle the sorting action
+            if (SessionSettings.recordsSort.equals(RecordSort.BY_NAME)) {
+                SessionSettings.recordsSortingOrder = !SessionSettings.recordsSortingOrder;
+
+                records = reverseList(records);
+                recordDescriptions = reverseList(recordDescriptions);
+            } else {
+                SessionSettings.recordsSort = RecordSort.BY_NAME;
+                SessionSettings.recordsSortingOrder = true;
+
+                records.sort((r1, r2) -> r1.getName().compareTo(r2.getName()));
+                createRecordDescriptions();
+
+                if (!SessionSettings.recordsSortingOrder) {
+                    records = reverseList(records);
+                    recordDescriptions = reverseList(recordDescriptions);
+                }
+            }
+
+            RecordAdapter recordAdapter = new RecordAdapter(this, records, recordDescriptions);
+            recordsListView.setAdapter(recordAdapter);
+
         } else if (id == R.id.nav_sort_stars) {
+            if (SessionSettings.recordsSort.equals(RecordSort.BY_RATING)) {
+                SessionSettings.recordsSortingOrder = !SessionSettings.recordsSortingOrder;
+
+                records = reverseList(records);
+                recordDescriptions = reverseList(recordDescriptions);
+            } else {
+                SessionSettings.recordsSort = RecordSort.BY_RATING;
+                SessionSettings.recordsSortingOrder = false;
+
+                records.sort((r1, r2) -> r1.getRating().compareTo(r2.getRating()));
+                createRecordDescriptions();
+
+                if (!SessionSettings.recordsSortingOrder) {
+                    records = reverseList(records);
+                    recordDescriptions = reverseList(recordDescriptions);
+                }
+            }
+            RecordAdapter recordAdapter = new RecordAdapter(this, records, recordDescriptions);
+            recordsListView.setAdapter(recordAdapter);
 
         } else if (id == R.id.nav_add_genre) {
             Intent intent = new Intent(RecordActivity.this, NewGenreActivity.class);
@@ -214,5 +274,11 @@ public class RecordActivity extends AppCompatActivity
         array.forEach(str -> builder.append(str).append(delimiter));
         String joined = builder.substring(0, builder.length() - delimiter.length());
         return joined;
+    }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    public <T> List<T> reverseList(List<T> list) {
+        return IntStream.range(0, list.size()).map(i -> list.size() - i - 1)
+                .mapToObj(list::get).collect(Collectors.toCollection(ArrayList::new));
     }
 }

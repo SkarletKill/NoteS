@@ -73,7 +73,7 @@ public class CategoryActivity extends AppCompatActivity {
     @NonNull
     private SwipeMenuCreator getSwipeMenuCreator() {
         return (SwipeMenu menu) -> {
-            int buttonsWidth = 220;
+            int buttonsWidth = 200;
 
             // create "open" item
             SwipeMenuItem openItem = new SwipeMenuItem(getApplicationContext());
