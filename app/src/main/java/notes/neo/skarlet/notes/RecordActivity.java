@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
@@ -31,6 +32,7 @@ import java.util.stream.IntStream;
 import notes.neo.skarlet.notes.adapters.RecordAdapter;
 import notes.neo.skarlet.notes.database.NotesDatabase;
 import notes.neo.skarlet.notes.database.constants.DBTables;
+import notes.neo.skarlet.notes.database.entity.Category;
 import notes.neo.skarlet.notes.database.entity.Genre;
 import notes.neo.skarlet.notes.database.entity.RecCat;
 import notes.neo.skarlet.notes.database.entity.Record;
@@ -80,6 +82,12 @@ public class RecordActivity extends AppCompatActivity
 
         db = Room.databaseBuilder(getApplicationContext(), NotesDatabase.class, DBTables.DB_NAME)
                 .allowMainThreadQueries().build();
+        Category category = db.categoryDao().getById(categoryId);
+        View headView = navigationView.getHeaderView(0);
+        TextView headerTitle = headView.findViewById(R.id.nav_header_title);
+        headerTitle.setText(category.getName());    // null???
+        TextView headerSubtitle = headView.findViewById(R.id.nav_header_subtitle);
+        headerSubtitle.setText(category.getDescription());
 
         recordsListView = (SwipeMenuListView) findViewById(R.id.records);
         records = new ArrayList<>();

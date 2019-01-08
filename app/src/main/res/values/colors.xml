@@ -8,6 +8,8 @@
     <color name="orange">#ed8a19</color>
     <color name="red">#f93f25</color>
     <color name="green">#058900</color>
+    <color name="menuBackground">#2d3238</color>
+    <color name="gold">#fca800</color>
 
     <color name="redStroke">#9e3d1c</color>
     <color name="redGradient1">#99462a</color>

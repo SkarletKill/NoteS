@@ -14,7 +14,7 @@
             android:title="Sort by rating" />
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="Genre management">
         <menu>
             <item
                 android:id="@+id/nav_add_genre"
