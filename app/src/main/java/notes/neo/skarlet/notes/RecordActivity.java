@@ -218,36 +218,18 @@ public class RecordActivity extends AppCompatActivity
             if (itemId.equals(genre.getId())) {
                 if (item.isChecked()) {
                     // If item already checked then unchecked it
-//                    records = db.recordDao().getAllInCategory(categoryId);
-
                     item.setChecked(false);
+
+                    records = db.recordDao().getAllInCategory(categoryId);
                 } else {
                     // If item is unchecked then checked it
-//                    records = records.stream().filter(r -> r.)
-
                     item.setChecked(true);
                 }
 
-                records = db.recordDao().getAllInCategory(categoryId);
                 SubMenu menu = optionMenu.getItem(0).getSubMenu();
 
                 // select all selected genres
-                List<Integer> selectedGenreIds = new ArrayList<Integer>() {
-                    @Override
-                    public boolean contains(Object o) {
-                        if (o instanceof Integer) {
-                            for (Integer elem : this) {
-                                if (elem.equals((Integer) o)) return true;
-                            }
-                            return false;
-                        } else return false;
-                    }
-                };
-//                genres.forEach(g -> {
-//                    if (menu.getItem(g.getId()).isChecked()) {
-//                        selected.add(g);
-//                    }
-//                });
+                List<Integer> selectedGenreIds = new ArrayList<>();
                 for (int i = 0; i < genres.size(); i++) {
                     if (menu.getItem(i).isChecked()) {
                         selectedGenreIds.add(genres.get(i).getId());
@@ -295,7 +277,7 @@ public class RecordActivity extends AppCompatActivity
                 SessionSettings.recordsSort = RecordSort.BY_NAME;
                 SessionSettings.recordsSortingOrder = true;
 
-                records.sort((r1, r2) -> r1.getName().compareTo(r2.getName()));
+                records.sort((r1, r2) -> r1.getName().toLowerCase().compareTo(r2.getName().toLowerCase()));
                 createRecordDescriptions();
 
                 if (!SessionSettings.recordsSortingOrder) {
