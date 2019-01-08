@@ -14,4 +14,7 @@
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
+    <string name="action_sort">sorting</string>
+    <string name="sort_by_name">by Name</string>
+    <string name="sort_by_priority">by Priority</string>
 </resources>

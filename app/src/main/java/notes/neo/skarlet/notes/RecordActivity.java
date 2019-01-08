@@ -93,7 +93,6 @@ public class RecordActivity extends AppCompatActivity
         }
         if (!SessionSettings.recordsSortingOrder) {
             records = reverseList(records);
-            recordDescriptions = reverseList(recordDescriptions);
         }
 
         createRecordDescriptions();
@@ -200,10 +199,10 @@ public class RecordActivity extends AppCompatActivity
 
         List<Genre> genres = db.genreDao().getByCategoryId(categoryId);
         for (Genre genre : genres) {
-            subMenu.add(R.id.filter_group, genre.getId(), 100, genre.getName());
+            subMenu.add(R.id.record_filter_group, genre.getId(), 100, genre.getName());
         }
 
-        subMenu.setGroupCheckable(R.id.filter_group, true, false);
+        subMenu.setGroupCheckable(R.id.record_filter_group, true, false);
 
         return true;
     }

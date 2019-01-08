@@ -7,9 +7,10 @@
         android:title="@string/filter"
         app:showAsAction="never">
         <menu>
-            <group android:id="@+id/filter_group"
+            <group
+                android:id="@+id/record_filter_group"
                 android:checkableBehavior="all"
-                android:orderInCategory="101" >
+                android:orderInCategory="101">
 
             </group>
         </menu>

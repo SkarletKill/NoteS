@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,17 +22,25 @@ import com.baoyz.swipemenulistview.SwipeMenuListView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import notes.neo.skarlet.notes.adapters.CategoryAdapter;
+import notes.neo.skarlet.notes.adapters.RecordAdapter;
 import notes.neo.skarlet.notes.database.constants.DBTables;
 import notes.neo.skarlet.notes.database.entity.Category;
 import notes.neo.skarlet.notes.database.NotesDatabase;
+import notes.neo.skarlet.notes.entity.CategorySort;
 import notes.neo.skarlet.notes.entity.Constants;
 import notes.neo.skarlet.notes.entity.CreationType;
+import notes.neo.skarlet.notes.entity.RecordSort;
+import notes.neo.skarlet.notes.entity.SessionSettings;
 
 public class CategoryActivity extends AppCompatActivity {
     private SwipeMenuListView categoriesListView;
     private List<Category> categories;
+
+    private Menu optionMenu;
 
     @TargetApi(Build.VERSION_CODES.N)
     @Override
@@ -131,11 +140,19 @@ public class CategoryActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_categoty, menu);
+        getMenuInflater().inflate(R.menu.category, menu);
+        optionMenu = menu;
+//
+//        SubMenu subMenu = menu.getItem(0).getSubMenu();
+//        subMenu.add(0, 0, Menu.NONE, "SortByName");
+//        subMenu.add(0, 1, Menu.NONE, "SortByPriority");
+
         return true;
     }
 
+    @TargetApi(Build.VERSION_CODES.N)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -144,10 +161,52 @@ public class CategoryActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.cat_action_sort_by_name) {
+            if (SessionSettings.categoriesSort.equals(CategorySort.BY_NAME)) {
+                SessionSettings.categoriesSortingOrder = !SessionSettings.categoriesSortingOrder;
+
+                categories = reverseList(categories);
+            } else {
+                SessionSettings.categoriesSort = CategorySort.BY_NAME;
+                SessionSettings.categoriesSortingOrder = true;
+
+                categories.sort((c1, c2) -> c1.getName().toLowerCase().compareTo(c2.getName().toLowerCase()));
+
+                if (!SessionSettings.categoriesSortingOrder) {
+                    categories = reverseList(categories);
+                }
+            }
+
+            CategoryAdapter categoryAdapter = new CategoryAdapter(this, categories);
+            categoriesListView.setAdapter(categoryAdapter);
+        } else if (id == R.id.cat_action_sort_by_priority) {
+            if (SessionSettings.categoriesSort.equals(CategorySort.BY_PRIORITY)) {
+                SessionSettings.categoriesSortingOrder = !SessionSettings.categoriesSortingOrder;
+
+                categories = reverseList(categories);
+            } else {
+                SessionSettings.categoriesSort = CategorySort.BY_PRIORITY;
+                SessionSettings.categoriesSortingOrder = true;
+
+                categories.sort((c1, c2) -> c1.getPriority().compareTo(c2.getPriority()));
+
+                if (!SessionSettings.categoriesSortingOrder) {
+                    categories = reverseList(categories);
+                }
+            }
+
+            CategoryAdapter categoryAdapter = new CategoryAdapter(this, categories);
+            categoriesListView.setAdapter(categoryAdapter);
+        } else if (id == R.id.action_settings) {
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    public <T> List<T> reverseList(List<T> list) {
+        return IntStream.range(0, list.size()).map(i -> list.size() - i - 1)
+                .mapToObj(list::get).collect(Collectors.toCollection(ArrayList::new));
     }
 }
