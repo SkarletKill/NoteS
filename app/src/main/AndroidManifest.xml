@@ -43,8 +43,13 @@
         </activity>
         <activity
             android:name=".RecordActivity"
-            android:label="@string/title_activity_record"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name=".TestActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.view.SubMenu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
@@ -30,10 +32,12 @@ import java.util.stream.IntStream;
 import notes.neo.skarlet.notes.adapters.RecordAdapter;
 import notes.neo.skarlet.notes.database.NotesDatabase;
 import notes.neo.skarlet.notes.database.constants.DBTables;
+import notes.neo.skarlet.notes.database.entity.Genre;
 import notes.neo.skarlet.notes.database.entity.RecCat;
 import notes.neo.skarlet.notes.database.entity.Record;
 import notes.neo.skarlet.notes.entity.Constants;
 import notes.neo.skarlet.notes.entity.CreationType;
+import notes.neo.skarlet.notes.entity.RecordMenuOptions;
 import notes.neo.skarlet.notes.entity.RecordSort;
 import notes.neo.skarlet.notes.entity.SessionSettings;
 
@@ -46,6 +50,8 @@ public class RecordActivity extends AppCompatActivity
     private SwipeMenuListView recordsListView;
     private List<Record> records;
     private List<String> recordDescriptions;
+
+    private Menu optionMenu;
 
     @TargetApi(Build.VERSION_CODES.N)
     @Override
@@ -188,21 +194,87 @@ public class RecordActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.record, menu);
+        optionMenu = menu;
+        SubMenu subMenu = menu.getItem(0).getSubMenu();// get my MenuItem with placeholder submenu
+//        subMenu.clear(); // delete place holder
+
+        List<Genre> genres = db.genreDao().getByCategoryId(categoryId);
+        for (Genre genre : genres) {
+            subMenu.add(R.id.filter_group, genre.getId(), 100, genre.getName());
+        }
+
+        subMenu.setGroupCheckable(R.id.filter_group, true, false);
+
         return true;
     }
 
+    @TargetApi(Build.VERSION_CODES.N)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        List<Genre> genres = db.genreDao().getByCategoryId(categoryId);
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        Integer itemId = item.getItemId();
+        for (Genre genre : genres) {
+            if (itemId.equals(genre.getId())) {
+                if (item.isChecked()) {
+                    // If item already checked then unchecked it
+//                    records = db.recordDao().getAllInCategory(categoryId);
+
+                    item.setChecked(false);
+                } else {
+                    // If item is unchecked then checked it
+//                    records = records.stream().filter(r -> r.)
+
+                    item.setChecked(true);
+                }
+
+                records = db.recordDao().getAllInCategory(categoryId);
+                SubMenu menu = optionMenu.getItem(0).getSubMenu();
+
+                // select all selected genres
+                List<Integer> selectedGenreIds = new ArrayList<Integer>() {
+                    @Override
+                    public boolean contains(Object o) {
+                        if (o instanceof Integer) {
+                            for (Integer elem : this) {
+                                if (elem.equals((Integer) o)) return true;
+                            }
+                            return false;
+                        } else return false;
+                    }
+                };
+//                genres.forEach(g -> {
+//                    if (menu.getItem(g.getId()).isChecked()) {
+//                        selected.add(g);
+//                    }
+//                });
+                for (int i = 0; i < genres.size(); i++) {
+                    if (menu.getItem(i).isChecked()) {
+                        selectedGenreIds.add(genres.get(i).getId());
+                    }
+                }
+
+                // create new array for filtered records
+                List<Record> recordsNew = new ArrayList<>();
+                nextRecord:
+                for (Record record : records) {
+                    List<Integer> recordGenreIds = db.recCatDao().getByRecordId(record.getId())
+                            .stream().map(RecCat::getGenreId).collect(Collectors.toCollection(ArrayList::new));
+                    for (Integer genreId : selectedGenreIds) {
+                        if (!recordGenreIds.contains(genreId)) {
+                            continue nextRecord;
+                        }
+                    }
+                    recordsNew.add(record);
+                }
+                records = recordsNew;
+                createRecordDescriptions();
+                RecordAdapter recordAdapter = new RecordAdapter(this, records, recordDescriptions);
+                recordsListView.setAdapter(recordAdapter);
+
+                return false;
+            }
         }
-
         return super.onOptionsItemSelected(item);
     }
 
