@@ -17,7 +17,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
@@ -37,7 +36,6 @@ import notes.neo.skarlet.notes.database.entity.RecCat;
 import notes.neo.skarlet.notes.database.entity.Record;
 import notes.neo.skarlet.notes.entity.Constants;
 import notes.neo.skarlet.notes.entity.CreationType;
-import notes.neo.skarlet.notes.entity.RecordMenuOptions;
 import notes.neo.skarlet.notes.entity.RecordSort;
 import notes.neo.skarlet.notes.entity.SessionSettings;
 
@@ -131,7 +129,7 @@ public class RecordActivity extends AppCompatActivity
             // set item width
             openItem.setWidth(buttonsWidth);
             // set a icon
-            openItem.setIcon(R.drawable.ic_edit);
+            openItem.setIcon(R.drawable.ic_menu_edit);
             // add to menu
             menu.addMenuItem(openItem);
 
@@ -143,7 +141,7 @@ public class RecordActivity extends AppCompatActivity
             // set item width
             deleteItem.setWidth(buttonsWidth);
             // set a icon
-            deleteItem.setIcon(R.drawable.ic_delete);
+            deleteItem.setIcon(R.drawable.ic_menu_delete);
             // add to menu
             menu.addMenuItem(deleteItem);
         };

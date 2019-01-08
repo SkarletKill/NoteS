@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,14 +25,12 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import notes.neo.skarlet.notes.adapters.CategoryAdapter;
-import notes.neo.skarlet.notes.adapters.RecordAdapter;
 import notes.neo.skarlet.notes.database.constants.DBTables;
 import notes.neo.skarlet.notes.database.entity.Category;
 import notes.neo.skarlet.notes.database.NotesDatabase;
 import notes.neo.skarlet.notes.entity.CategorySort;
 import notes.neo.skarlet.notes.entity.Constants;
 import notes.neo.skarlet.notes.entity.CreationType;
-import notes.neo.skarlet.notes.entity.RecordSort;
 import notes.neo.skarlet.notes.entity.SessionSettings;
 
 public class CategoryActivity extends AppCompatActivity {
@@ -91,7 +88,7 @@ public class CategoryActivity extends AppCompatActivity {
             // set item width
             openItem.setWidth(buttonsWidth);
             // set a icon
-            openItem.setIcon(R.drawable.ic_edit);
+            openItem.setIcon(R.drawable.ic_menu_edit);
             // add to menu
             menu.addMenuItem(openItem);
 
@@ -102,7 +99,7 @@ public class CategoryActivity extends AppCompatActivity {
             // set item width
             deleteItem.setWidth(buttonsWidth);
             // set a icon
-            deleteItem.setIcon(R.drawable.ic_delete);
+            deleteItem.setIcon(R.drawable.ic_menu_delete);
             // add to menu
             menu.addMenuItem(deleteItem);
         };

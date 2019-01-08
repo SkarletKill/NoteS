@@ -30,6 +30,6 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         app:backgroundTint="@android:color/holo_red_light"
-        app:srcCompat="@drawable/plus_in_circle" />
+        app:srcCompat="@drawable/ic_add_record" />
 
 </android.support.design.widget.CoordinatorLayout>
