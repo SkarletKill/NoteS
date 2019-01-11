@@ -7,6 +7,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.SubMenu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -17,7 +20,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
@@ -29,6 +34,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import notes.neo.skarlet.notes.adapters.MyAdapter;
 import notes.neo.skarlet.notes.adapters.RecordAdapter;
 import notes.neo.skarlet.notes.database.NotesDatabase;
 import notes.neo.skarlet.notes.database.constants.DBTables;
@@ -47,7 +53,7 @@ public class RecordActivity extends AppCompatActivity
 
     private Integer categoryId;
 
-    private SwipeMenuListView recordsListView;
+    private RecyclerView recordsListView;
     private List<Record> records;
     private List<String> recordDescriptions;
 
@@ -89,11 +95,10 @@ public class RecordActivity extends AppCompatActivity
         TextView headerSubtitle = headView.findViewById(R.id.nav_header_subtitle);
         headerSubtitle.setText(category.getDescription());
 
-        recordsListView = (SwipeMenuListView) findViewById(R.id.records);
         records = new ArrayList<>();
         records.addAll(db.recordDao().getAllInCategory(categoryId));
         if (SessionSettings.recordsSort.equals(RecordSort.BY_NAME)) {
-            records.sort((r1, r2) -> r1.getName().compareTo(r2.getName()));
+            records.sort((r1, r2) -> r1.getName().toLowerCase().compareTo(r2.getName().toLowerCase()));
         } else if (SessionSettings.recordsSort.equals(RecordSort.BY_RATING)) {
             records.sort((r1, r2) -> r1.getRating().compareTo(r2.getRating()));
         }
@@ -104,13 +109,27 @@ public class RecordActivity extends AppCompatActivity
         createRecordDescriptions();
 
         RecordAdapter recordAdapter = new RecordAdapter(this, records, recordDescriptions);
-        recordsListView.setAdapter(recordAdapter);
 
-        SwipeMenuCreator creator = getSwipeMenuCreator();
-        // set creator
-        recordsListView.setMenuCreator(creator);
+        recordsListView = (RecyclerView) findViewById(R.id.records);
 
-        recordsListView.setOnMenuItemClickListener(getOnSwipeMenuItemClickListener());
+        recordsListView.setLayoutManager(new LinearLayoutManager(this));
+        MyAdapter myAdapter = new MyAdapter(this, records, recordDescriptions);
+        recordsListView.setAdapter(myAdapter);
+//        myAdapter.setItemClickCallback(this);
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+                Toast.makeText(getApplicationContext(), "Record was deleted!", Toast.LENGTH_SHORT).show();
+                myAdapter.notifyDataSetChanged();
+            }
+        });
+        itemTouchHelper.attachToRecyclerView(recordsListView);
     }
 
     @TargetApi(Build.VERSION_CODES.N)
@@ -123,66 +142,6 @@ public class RecordActivity extends AppCompatActivity
             String description = stringJoiner(", ", genres);
             recordDescriptions.add(description);
         }
-    }
-
-    @NonNull
-    private SwipeMenuCreator getSwipeMenuCreator() {
-        return (SwipeMenu menu) -> {
-            int buttonsWidth = 180;
-            // create "open" item
-            SwipeMenuItem openItem = new SwipeMenuItem(
-                    getApplicationContext());
-            // set item background
-            openItem.setBackground(R.color.green);
-            // set item width
-            openItem.setWidth(buttonsWidth);
-            // set a icon
-            openItem.setIcon(R.drawable.ic_menu_edit);
-            // add to menu
-            menu.addMenuItem(openItem);
-
-            // create "delete" item
-            SwipeMenuItem deleteItem = new SwipeMenuItem(
-                    getApplicationContext());
-            // set item background
-            deleteItem.setBackground(R.color.red);
-            // set item width
-            deleteItem.setWidth(buttonsWidth);
-            // set a icon
-            deleteItem.setIcon(R.drawable.ic_menu_delete);
-            // add to menu
-            menu.addMenuItem(deleteItem);
-        };
-    }
-
-    @NonNull
-    private SwipeMenuListView.OnMenuItemClickListener getOnSwipeMenuItemClickListener() {
-        return (int position, SwipeMenu menu, int index) -> {
-            Intent intent;
-            switch (index) {
-                case 0:
-                    // open
-                    intent = new Intent(RecordActivity.this, NewRecordActivity.class);
-                    intent.putExtra(Constants.CATEGORY_ID, categoryId);
-                    intent.putExtra(Constants.CREATION_TYPE, CreationType.EDIT.name());
-                    intent.putExtra(Constants.RECORD, records.get(position).getId());
-                    startActivity(intent);
-                    break;
-                case 1:
-                    // delete
-                    NotesDatabase db = Room.databaseBuilder(getApplicationContext(), NotesDatabase.class, DBTables.DB_NAME)
-                            .allowMainThreadQueries().build();
-                    db.recordDao().delete(records.get(position));
-
-                    intent = new Intent(RecordActivity.this, RecordActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    intent.putExtra("categoryId", categoryId);
-                    startActivity(intent);
-                    break;
-            }
-            // false : close the menu; true : not close the menu
-            return false;
-        };
     }
 
     @Override
@@ -257,7 +216,7 @@ public class RecordActivity extends AppCompatActivity
                 records = recordsNew;
                 createRecordDescriptions();
                 RecordAdapter recordAdapter = new RecordAdapter(this, records, recordDescriptions);
-                recordsListView.setAdapter(recordAdapter);
+//                recordsListView.setAdapter(recordAdapter);
 
                 return false;
             }
@@ -292,7 +251,7 @@ public class RecordActivity extends AppCompatActivity
             }
 
             RecordAdapter recordAdapter = new RecordAdapter(this, records, recordDescriptions);
-            recordsListView.setAdapter(recordAdapter);
+//            recordsListView.setAdapter(recordAdapter);
 
         } else if (id == R.id.nav_sort_stars) {
             if (SessionSettings.recordsSort.equals(RecordSort.BY_RATING)) {
@@ -313,7 +272,7 @@ public class RecordActivity extends AppCompatActivity
                 }
             }
             RecordAdapter recordAdapter = new RecordAdapter(this, records, recordDescriptions);
-            recordsListView.setAdapter(recordAdapter);
+//            recordsListView.setAdapter(recordAdapter);
 
         } else if (id == R.id.nav_add_genre) {
             Intent intent = new Intent(RecordActivity.this, NewGenreActivity.class);

@@ -19,9 +19,9 @@ public class RecordAdapter extends BaseAdapter {
     private List<String> descriptions;
 
     public RecordAdapter(Context c, List<Record> records, List<String> descriptions) {
-        this.mInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.records = records;
         this.descriptions = descriptions;
+        this.mInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
