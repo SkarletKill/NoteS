@@ -59,11 +59,14 @@ public class NewRecordActivity extends AppCompatActivity {
             title.setText(Constants.EDIT_RECORD);
 
         name = (EditText) findViewById(R.id.newRecordName);
-        if (creationType.equals(CreationType.EDIT))
-            name.setText(db.recordDao().getById(extras.getInt(Constants.RECORD)).getName());
-
         ratingBar = (RatingBar) findViewById(R.id.ratingBar);
         ratingMark = (TextView) findViewById(R.id.ratingMark);
+        if (creationType.equals(CreationType.EDIT)) {
+            Record editableRecord = db.recordDao().getById(extras.getInt(Constants.RECORD));
+            name.setText(editableRecord.getName());
+            ratingBar.setRating((float) editableRecord.getRating() / 2);
+            ratingMark.setText(String.valueOf(editableRecord.getRating()));
+        }
 
         ratingBar.setOnRatingBarChangeListener((RatingBar ratingBar, float v, boolean b) ->
                 ratingMark.setText(String.valueOf((int) (v * 2))));
