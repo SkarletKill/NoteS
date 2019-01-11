@@ -3,9 +3,9 @@ package notes.neo.skarlet.notes;
 import android.annotation.TargetApi;
 import android.arch.persistence.room.Room;
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,21 +20,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.baoyz.swipemenulistview.SwipeMenu;
-import com.baoyz.swipemenulistview.SwipeMenuCreator;
-import com.baoyz.swipemenulistview.SwipeMenuItem;
-import com.baoyz.swipemenulistview.SwipeMenuListView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import notes.neo.skarlet.notes.adapters.MyAdapter;
 import notes.neo.skarlet.notes.adapters.RecordAdapter;
 import notes.neo.skarlet.notes.database.NotesDatabase;
 import notes.neo.skarlet.notes.database.constants.DBTables;
@@ -47,6 +39,7 @@ import notes.neo.skarlet.notes.entity.CreationType;
 import notes.neo.skarlet.notes.entity.RecordSort;
 import notes.neo.skarlet.notes.entity.SessionSettings;
 import notes.neo.skarlet.notes.swipe.SwipeController;
+import notes.neo.skarlet.notes.swipe.SwipeControllerActions;
 
 public class RecordActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -54,7 +47,7 @@ public class RecordActivity extends AppCompatActivity
 
     private Integer categoryId;
 
-    private RecyclerView recordsListView;
+    private RecyclerView recordsRecyclerView;
     private List<Record> records;
     private List<String> recordDescriptions;
 
@@ -109,19 +102,48 @@ public class RecordActivity extends AppCompatActivity
 
         createRecordDescriptions();
 
-        RecordAdapter recordAdapter = new RecordAdapter(this, records, recordDescriptions);
+        recordsRecyclerView = (RecyclerView) findViewById(R.id.records);
+        setupRecyclerView();
+    }
 
-        recordsListView = (RecyclerView) findViewById(R.id.records);
+    private void setupRecyclerView() {
+        recordsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        RecordAdapter recordAdapter = new RecordAdapter(records, recordDescriptions);
+        recordsRecyclerView.setAdapter(recordAdapter);
 
-        recordsListView.setLayoutManager(new LinearLayoutManager(this));
-        MyAdapter myAdapter = new MyAdapter(this, records, recordDescriptions);
-        recordsListView.setAdapter(myAdapter);
+        SwipeController swipeController = new SwipeController(new SwipeControllerActions() {
+            @Override
+            public void onLeftClicked(int position) {
+                Intent intent = new Intent(RecordActivity.this, NewRecordActivity.class);
+                intent.putExtra(Constants.CATEGORY_ID, categoryId);
+                intent.putExtra(Constants.CREATION_TYPE, CreationType.EDIT.name());
+                intent.putExtra(Constants.RECORD, records.get(position).getId());
+                startActivity(intent);
+            }
 
-        SwipeController swipeController = new SwipeController();
+            @Override
+            public void onRightClicked(int position) {
+                db.recordDao().delete(records.get(position));
+
+                Intent intent = new Intent(RecordActivity.this, RecordActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra(Constants.CATEGORY_ID, categoryId);
+                startActivity(intent);
+//                recordAdapter.getRecords().remove(position);
+//                recordAdapter.getDescriptions().remove(position);
+//                recordAdapter.notifyItemRemoved(position);
+//                recordAdapter.notifyItemRangeChanged(position, recordAdapter.getItemCount());
+            }
+        });
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeController);
-        itemTouchHelper.attachToRecyclerView(recordsListView);
+        itemTouchHelper.attachToRecyclerView(recordsRecyclerView);
 
-
+        recordsRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+                swipeController.onDraw(c);
+            }
+        });
     }
 
     @TargetApi(Build.VERSION_CODES.N)
@@ -207,8 +229,8 @@ public class RecordActivity extends AppCompatActivity
                 }
                 records = recordsNew;
                 createRecordDescriptions();
-                RecordAdapter recordAdapter = new RecordAdapter(this, records, recordDescriptions);
-//                recordsListView.setAdapter(recordAdapter);
+                RecordAdapter recordAdapter = new RecordAdapter(records, recordDescriptions);
+                recordsRecyclerView.setAdapter(recordAdapter);
 
                 return false;
             }
@@ -242,8 +264,8 @@ public class RecordActivity extends AppCompatActivity
                 }
             }
 
-            RecordAdapter recordAdapter = new RecordAdapter(this, records, recordDescriptions);
-//            recordsListView.setAdapter(recordAdapter);
+            RecordAdapter recordAdapter = new RecordAdapter(records, recordDescriptions);
+            recordsRecyclerView.setAdapter(recordAdapter);
 
         } else if (id == R.id.nav_sort_stars) {
             if (SessionSettings.recordsSort.equals(RecordSort.BY_RATING)) {
@@ -263,8 +285,8 @@ public class RecordActivity extends AppCompatActivity
                     recordDescriptions = reverseList(recordDescriptions);
                 }
             }
-            RecordAdapter recordAdapter = new RecordAdapter(this, records, recordDescriptions);
-//            recordsListView.setAdapter(recordAdapter);
+            RecordAdapter recordAdapter = new RecordAdapter(records, recordDescriptions);
+            recordsRecyclerView.setAdapter(recordAdapter);
 
         } else if (id == R.id.nav_add_genre) {
             Intent intent = new Intent(RecordActivity.this, NewGenreActivity.class);

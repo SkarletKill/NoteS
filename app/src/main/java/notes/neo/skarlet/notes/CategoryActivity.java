@@ -3,21 +3,19 @@ package notes.neo.skarlet.notes;
 import android.annotation.TargetApi;
 import android.arch.persistence.room.Room;
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.AdapterView;
-
-import com.baoyz.swipemenulistview.SwipeMenu;
-import com.baoyz.swipemenulistview.SwipeMenuCreator;
-import com.baoyz.swipemenulistview.SwipeMenuItem;
-import com.baoyz.swipemenulistview.SwipeMenuListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +30,11 @@ import notes.neo.skarlet.notes.entity.CategorySort;
 import notes.neo.skarlet.notes.entity.Constants;
 import notes.neo.skarlet.notes.entity.CreationType;
 import notes.neo.skarlet.notes.entity.SessionSettings;
+import notes.neo.skarlet.notes.swipe.SwipeController;
+import notes.neo.skarlet.notes.swipe.SwipeControllerActions;
 
 public class CategoryActivity extends AppCompatActivity {
-    private SwipeMenuListView categoriesListView;
+    private RecyclerView categoriesRecyclerView;
     private List<Category> categories;
 
     private Menu optionMenu;
@@ -57,82 +57,48 @@ public class CategoryActivity extends AppCompatActivity {
         NotesDatabase db = Room.databaseBuilder(getApplicationContext(), NotesDatabase.class, DBTables.DB_NAME)
                 .allowMainThreadQueries().build();
 
-        categoriesListView = (SwipeMenuListView) findViewById(R.id.categories);
+        categoriesRecyclerView = (RecyclerView) findViewById(R.id.categories);
         categories = new ArrayList<>();
         categories.addAll(db.categoryDao().getAll());
 
+        setupRecyclerView();
+    }
+
+    private void setupRecyclerView() {
+        categoriesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         CategoryAdapter categoryAdapter = new CategoryAdapter(this, categories);
-        categoriesListView.setAdapter(categoryAdapter);
-        categoriesListView.setOnItemClickListener((AdapterView<?> adapterView, View view, int i, long l) -> {
-            Intent intent = new Intent(CategoryActivity.this, RecordActivity.class);
-            intent.putExtra("categoryId", categories.get(i).getId());
-            startActivity(intent);
-        });
+        categoriesRecyclerView.setAdapter(categoryAdapter);
 
-        SwipeMenuCreator creator = getSwipeMenuCreator();
-        // set creator
-        categoriesListView.setMenuCreator(creator);
-
-        categoriesListView.setOnMenuItemClickListener(getOnSwipeMenuItemClickListener());
-    }
-
-    @NonNull
-    private SwipeMenuCreator getSwipeMenuCreator() {
-        return (SwipeMenu menu) -> {
-            int buttonsWidth = 200;
-
-            // create "open" item
-            SwipeMenuItem openItem = new SwipeMenuItem(getApplicationContext());
-            // set item background
-            openItem.setBackground(R.color.green);
-            // set item width
-            openItem.setWidth(buttonsWidth);
-            // set a icon
-            openItem.setIcon(R.drawable.ic_menu_edit);
-            // add to menu
-            menu.addMenuItem(openItem);
-
-            // create "delete" item
-            SwipeMenuItem deleteItem = new SwipeMenuItem(getApplicationContext());
-            // set item background
-            deleteItem.setBackground(R.color.red);
-            // set item width
-            deleteItem.setWidth(buttonsWidth);
-            // set a icon
-            deleteItem.setIcon(R.drawable.ic_menu_delete);
-            // add to menu
-            menu.addMenuItem(deleteItem);
-        };
-    }
-
-    @NonNull
-    private SwipeMenuListView.OnMenuItemClickListener getOnSwipeMenuItemClickListener() {
-        return (int position, SwipeMenu menu, int index) -> {
-            Intent intent;
-            switch (index) {
-                case 0:
-                    // open
-                    intent = new Intent(CategoryActivity.this, NewCategoryActivity.class);
-                    intent.putExtra(Constants.CREATION_TYPE, CreationType.EDIT.name());
-                    intent.putExtra(Constants.CATEGORY, categories.get(position).getId());
-                    startActivity(intent);
-                    System.out.println();
-                    break;
-                case 1:
-                    // delete
-                    NotesDatabase db = Room.databaseBuilder(getApplicationContext(), NotesDatabase.class, DBTables.DB_NAME)
-                            .allowMainThreadQueries().build();
-                    db.categoryDao().delete(categories.get(position));
-
-                    intent = new Intent(CategoryActivity.this, CategoryActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    intent.putExtra("categoryId", categories.get(position).getId());
-                    startActivity(intent);
-                    break;
+        SwipeController swipeController = new SwipeController(new SwipeControllerActions() {
+            @Override
+            public void onLeftClicked(int position) {
+                Intent intent = new Intent(CategoryActivity.this, NewCategoryActivity.class);
+                intent.putExtra(Constants.CREATION_TYPE, CreationType.EDIT.name());
+                intent.putExtra(Constants.CATEGORY, categories.get(position).getId());
+                startActivity(intent);
             }
-            // false : close the menu; true : not close the menu
-            return false;
-        };
+
+            @Override
+            public void onRightClicked(int position) {
+                NotesDatabase db = Room.databaseBuilder(getApplicationContext(), NotesDatabase.class, DBTables.DB_NAME)
+                        .allowMainThreadQueries().build();
+                db.categoryDao().delete(categories.get(position));
+
+                Intent intent = new Intent(CategoryActivity.this, CategoryActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra(Constants.CATEGORY_ID, categories.get(position).getId());
+                startActivity(intent);
+            }
+        });
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeController);
+        itemTouchHelper.attachToRecyclerView(categoriesRecyclerView);
+
+        categoriesRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+                swipeController.onDraw(c);
+            }
+        });
     }
 
     @Override
@@ -141,10 +107,6 @@ public class CategoryActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.category, menu);
         optionMenu = menu;
-//
-//        SubMenu subMenu = menu.getItem(0).getSubMenu();
-//        subMenu.add(0, 0, Menu.NONE, "SortByName");
-//        subMenu.add(0, 1, Menu.NONE, "SortByPriority");
 
         return true;
     }
@@ -175,7 +137,7 @@ public class CategoryActivity extends AppCompatActivity {
             }
 
             CategoryAdapter categoryAdapter = new CategoryAdapter(this, categories);
-            categoriesListView.setAdapter(categoryAdapter);
+            categoriesRecyclerView.setAdapter(categoryAdapter);
         } else if (id == R.id.cat_action_sort_by_priority) {
             if (SessionSettings.categoriesSort.equals(CategorySort.BY_PRIORITY)) {
                 SessionSettings.categoriesSortingOrder = !SessionSettings.categoriesSortingOrder;
@@ -193,7 +155,7 @@ public class CategoryActivity extends AppCompatActivity {
             }
 
             CategoryAdapter categoryAdapter = new CategoryAdapter(this, categories);
-            categoriesListView.setAdapter(categoryAdapter);
+            categoriesRecyclerView.setAdapter(categoryAdapter);
         } else if (id == R.id.action_settings) {
             return true;
         }
@@ -205,5 +167,11 @@ public class CategoryActivity extends AppCompatActivity {
     public <T> List<T> reverseList(List<T> list) {
         return IntStream.range(0, list.size()).map(i -> list.size() - i - 1)
                 .mapToObj(list::get).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    public void gotoRecords(Category category){
+        Intent intent = new Intent(CategoryActivity.this, RecordActivity.class);
+        intent.putExtra(Constants.CATEGORY_ID, category.getId());
+        startActivity(intent);
     }
 }
