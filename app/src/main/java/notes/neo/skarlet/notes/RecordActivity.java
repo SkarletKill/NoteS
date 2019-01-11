@@ -46,6 +46,7 @@ import notes.neo.skarlet.notes.entity.Constants;
 import notes.neo.skarlet.notes.entity.CreationType;
 import notes.neo.skarlet.notes.entity.RecordSort;
 import notes.neo.skarlet.notes.entity.SessionSettings;
+import notes.neo.skarlet.notes.swipe.SwipeController;
 
 public class RecordActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -115,21 +116,12 @@ public class RecordActivity extends AppCompatActivity
         recordsListView.setLayoutManager(new LinearLayoutManager(this));
         MyAdapter myAdapter = new MyAdapter(this, records, recordDescriptions);
         recordsListView.setAdapter(myAdapter);
-//        myAdapter.setItemClickCallback(this);
 
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-                Toast.makeText(getApplicationContext(), "Record was deleted!", Toast.LENGTH_SHORT).show();
-                myAdapter.notifyDataSetChanged();
-            }
-        });
+        SwipeController swipeController = new SwipeController();
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeController);
         itemTouchHelper.attachToRecyclerView(recordsListView);
+
+
     }
 
     @TargetApi(Build.VERSION_CODES.N)
