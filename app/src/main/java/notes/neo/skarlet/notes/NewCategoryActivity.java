@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import notes.neo.skarlet.notes.database.constants.DBTables;
 import notes.neo.skarlet.notes.database.entity.Category;
@@ -63,6 +64,11 @@ public class NewCategoryActivity extends AppCompatActivity {
                 .allowMainThreadQueries().build();
         String name = String.valueOf(this.name.getText());
         String description = String.valueOf(this.description.getText());
+        String priorityString = String.valueOf(this.priority.getText());
+        if (priorityString.isEmpty()) {
+            Toast.makeText(NewCategoryActivity.this, "Please set a priority", Toast.LENGTH_SHORT).show();
+            return;
+        }
         Integer priority = Integer.parseInt(String.valueOf(this.priority.getText()));
         Category category = new Category(name, description, priority);
 

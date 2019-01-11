@@ -3,11 +3,9 @@ package notes.neo.skarlet.notes;
 import android.annotation.TargetApi;
 import android.arch.persistence.room.Room;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,8 +35,6 @@ import notes.neo.skarlet.notes.swipe.SwipeControllerActions;
 public class CategoryActivity extends AppCompatActivity {
     private RecyclerView categoriesRecyclerView;
     private List<Category> categories;
-
-    private Menu optionMenu;
 
     @TargetApi(Build.VERSION_CODES.N)
     @Override
@@ -107,7 +103,6 @@ public class CategoryActivity extends AppCompatActivity {
         super.onCreateOptionsMenu(menu);
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.category, menu);
-        optionMenu = menu;
 
         return true;
     }
