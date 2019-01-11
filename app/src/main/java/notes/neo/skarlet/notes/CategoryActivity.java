@@ -3,6 +3,7 @@ package notes.neo.skarlet.notes;
 import android.annotation.TargetApi;
 import android.arch.persistence.room.Room;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.os.Build;
 import android.os.Bundle;
@@ -69,7 +70,7 @@ public class CategoryActivity extends AppCompatActivity {
         CategoryAdapter categoryAdapter = new CategoryAdapter(this, categories);
         categoriesRecyclerView.setAdapter(categoryAdapter);
 
-        SwipeController swipeController = new SwipeController(new SwipeControllerActions() {
+        SwipeController swipeController = new SwipeController(getResources(), new SwipeControllerActions() {
             @Override
             public void onLeftClicked(int position) {
                 Intent intent = new Intent(CategoryActivity.this, NewCategoryActivity.class);

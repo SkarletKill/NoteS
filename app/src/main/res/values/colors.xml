@@ -4,7 +4,9 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#353E4F</color>
     <color name="colorAccent">#FF4081</color>
-    
+
+    <color name="colorPrimaryLight">#4b5fc9</color>
+    <color name="colorPrimaryLight2">#4557b6</color>
     <color name="orange">#ed8a19</color>
     <color name="red">#f93f25</color>
     <color name="green">#058900</color>

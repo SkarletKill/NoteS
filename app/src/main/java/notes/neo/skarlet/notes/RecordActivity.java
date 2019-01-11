@@ -111,7 +111,7 @@ public class RecordActivity extends AppCompatActivity
         RecordAdapter recordAdapter = new RecordAdapter(records, recordDescriptions);
         recordsRecyclerView.setAdapter(recordAdapter);
 
-        SwipeController swipeController = new SwipeController(new SwipeControllerActions() {
+        SwipeController swipeController = new SwipeController(getResources(), new SwipeControllerActions() {
             @Override
             public void onLeftClicked(int position) {
                 Intent intent = new Intent(RecordActivity.this, NewRecordActivity.class);
