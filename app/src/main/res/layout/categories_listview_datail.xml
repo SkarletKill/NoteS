@@ -11,10 +11,10 @@
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="10sp"
-        android:paddingTop="10sp"
-        android:paddingLeft="40sp"
-        android:paddingRight="40sp"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
         android:background="@color/colorPrimaryDark"
         android:textSize="24sp">
 
@@ -24,6 +24,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
+            android:layout_toStartOf="@+id/categoryPriority"
+            android:layout_marginRight="25dp"
             android:text="CategoryName"
             android:textColor="@color/colorWhite"
             android:textSize="24sp" />
@@ -34,8 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_alignStart="@+id/categoryName"
             android:layout_below="@+id/categoryName"
-            android:layout_marginTop="5sp"
-            android:maxWidth="200sp"
+            android:layout_marginTop="5dp"
             android:text="@string/description"
             android:textColor="@color/orange" />
 
