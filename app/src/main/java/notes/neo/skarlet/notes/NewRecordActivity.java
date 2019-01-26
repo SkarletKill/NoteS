@@ -93,7 +93,7 @@ public class NewRecordActivity extends AppCompatActivity {
     public void onConfirmClick(View view) {
         NotesDatabase db = Room.databaseBuilder(getApplicationContext(), NotesDatabase.class, "notes_database")
                 .allowMainThreadQueries().build();
-        String name = String.valueOf(this.name.getText());
+        String name = String.valueOf(this.name.getText()).trim();
         Integer mark = Integer.parseInt(String.valueOf(this.ratingMark.getText()));
         Record record = new Record(categoryId, name, mark);
         if (creationType.equals(CreationType.CREATION))

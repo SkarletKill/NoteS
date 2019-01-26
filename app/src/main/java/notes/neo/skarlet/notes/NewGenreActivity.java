@@ -56,7 +56,7 @@ public class NewGenreActivity extends AppCompatActivity {
     public void onConfirmClick(View view) {
         NotesDatabase db = Room.databaseBuilder(getApplicationContext(), NotesDatabase.class, "notes_database")
                 .allowMainThreadQueries().build();
-        String name = String.valueOf(this.name.getText());
+        String name = String.valueOf(this.name.getText()).trim();
         Genre genre = new Genre(extras.getInt(Constants.CATEGORY_ID), name);
 
         db.genreDao().insert(genre);

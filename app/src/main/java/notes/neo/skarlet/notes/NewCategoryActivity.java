@@ -62,8 +62,8 @@ public class NewCategoryActivity extends AppCompatActivity {
     public void onConfirmClick(View view) {
         NotesDatabase db = Room.databaseBuilder(getApplicationContext(), NotesDatabase.class, DBTables.DB_NAME)
                 .allowMainThreadQueries().build();
-        String name = String.valueOf(this.name.getText());
-        String description = String.valueOf(this.description.getText());
+        String name = String.valueOf(this.name.getText()).trim();
+        String description = String.valueOf(this.description.getText()).trim();
         String priorityString = String.valueOf(this.priority.getText());
         if (priorityString.isEmpty()) {
             Toast.makeText(NewCategoryActivity.this, "Please set a priority", Toast.LENGTH_SHORT).show();
