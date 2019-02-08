@@ -14,38 +14,27 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".NewCategoryActivity">
             <intent-filter>
                 <action android:name=".NewCategoryActivity" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity android:name=".NewRecordActivity">
             <intent-filter>
                 <action android:name=".NewRecordActivity" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity android:name=".NewGenreActivity" />
-        <activity android:name=".TestActivity">
-            <intent-filter>
-                <action android:name=".TestActivity" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
         <activity
             android:name=".RecordActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name=".TestActivity" />
-
+                <action android:name=".RecordActivity" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -53,6 +42,18 @@
             android:name=".GenreActivity"
             android:label="@string/title_activity_genre"
             android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name=".GenreActivity" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".RecordContentsActivity">
+            <intent-filter>
+                <action android:name=".RecordContentsActivity" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".TestActivity">
             <intent-filter>
                 <action android:name=".TestActivity" />
 

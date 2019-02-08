@@ -6,6 +6,7 @@ public interface DBFields {
     String GENRE_ID = "gen_id";
     String RECORD_ID = "rec_id";
     String NAME = "name";
+    String TEXT = "text";
     String DESCRIPTION = "description";
     String PRIORITY = "priority";
     String GENRES = "genres";

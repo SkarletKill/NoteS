@@ -29,10 +29,14 @@ public class Record {
     @ColumnInfo(name = DBFields.RARING)
     private Integer rating;
 
+    @ColumnInfo(name = DBFields.TEXT)
+    private String text;
+
     public Record(Integer categoryId, String name, Integer rating) {
         this.categoryId = categoryId;
         this.name = name;
         this.rating = rating;
+        this.text = "";
     }
 
     public Integer getId() {
@@ -51,11 +55,19 @@ public class Record {
         return rating;
     }
 
+    public String getText() {
+        return text;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
     public void setRating(Integer rating) {
         this.rating = rating;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 }

@@ -108,7 +108,7 @@ public class RecordActivity extends AppCompatActivity
 
     private void setupRecyclerView() {
         recordsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        RecordAdapter recordAdapter = new RecordAdapter(records, recordDescriptions);
+        RecordAdapter recordAdapter = new RecordAdapter(this, records, recordDescriptions);
         recordsRecyclerView.setAdapter(recordAdapter);
 
         SwipeController swipeController = new SwipeController(getResources(), new SwipeControllerActions() {
@@ -229,7 +229,7 @@ public class RecordActivity extends AppCompatActivity
                 }
                 records = recordsNew;
                 createRecordDescriptions();
-                RecordAdapter recordAdapter = new RecordAdapter(records, recordDescriptions);
+                RecordAdapter recordAdapter = new RecordAdapter(this, records, recordDescriptions);
                 recordsRecyclerView.setAdapter(recordAdapter);
 
                 return false;
@@ -264,7 +264,7 @@ public class RecordActivity extends AppCompatActivity
                 }
             }
 
-            RecordAdapter recordAdapter = new RecordAdapter(records, recordDescriptions);
+            RecordAdapter recordAdapter = new RecordAdapter(this, records, recordDescriptions);
             recordsRecyclerView.setAdapter(recordAdapter);
 
         } else if (id == R.id.nav_sort_stars) {
@@ -285,7 +285,7 @@ public class RecordActivity extends AppCompatActivity
                     recordDescriptions = reverseList(recordDescriptions);
                 }
             }
-            RecordAdapter recordAdapter = new RecordAdapter(records, recordDescriptions);
+            RecordAdapter recordAdapter = new RecordAdapter(this, records, recordDescriptions);
             recordsRecyclerView.setAdapter(recordAdapter);
 
         } else if (id == R.id.nav_manage_genres) {
@@ -312,5 +312,12 @@ public class RecordActivity extends AppCompatActivity
     public <T> List<T> reverseList(List<T> list) {
         return IntStream.range(0, list.size()).map(i -> list.size() - i - 1)
                 .mapToObj(list::get).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    public void gotoRecordContents(Record record) {
+        Intent intent = new Intent(RecordActivity.this, RecordContentsActivity.class);
+//        intent.putExtra(Constants.CATEGORY_ID, category.getId());
+        intent.putExtra(Constants.RECORD, record.getId());
+        startActivity(intent);
     }
 }

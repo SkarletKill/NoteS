@@ -1,5 +1,7 @@
 package notes.neo.skarlet.notes.adapters;
 
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,15 +10,21 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import notes.neo.skarlet.notes.CategoryActivity;
 import notes.neo.skarlet.notes.R;
+import notes.neo.skarlet.notes.RecordActivity;
+import notes.neo.skarlet.notes.database.entity.Category;
 import notes.neo.skarlet.notes.database.entity.Record;
+import notes.neo.skarlet.notes.entity.Constants;
 
 public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder> {
+    RecordActivity activity;
     private List<Record> records;
     private List<String> descriptions;
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public RecordAdapter(List<Record> records, List<String> descriptions) {
+    public RecordAdapter(RecordActivity activity, List<Record> records, List<String> descriptions) {
+        this.activity = activity;
         this.records = records;
         this.descriptions = descriptions;
     }
@@ -28,7 +36,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.records_listview_detail, parent, false);
-        ViewHolder viewHolder = new ViewHolder(v);
+        ViewHolder viewHolder = new ViewHolder(activity, v);
         return viewHolder;
     }
 
@@ -59,13 +67,20 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.ViewHolder
         TextView mRecordName;
         TextView mRecordDesctoption;
         TextView mRecordMark;
+        AppCompatActivity activity;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(RecordActivity activity, View itemView) {
             super(itemView);
+            this.activity = activity;
 
             mRecordName = itemView.findViewById(R.id.recordName);
             mRecordDesctoption = itemView.findViewById(R.id.recordDescription);
             mRecordMark = itemView.findViewById(R.id.recordMark);
+
+            itemView.setOnClickListener(view -> {
+                Record record = (Record) view.getTag();
+                activity.gotoRecordContents(record);
+            });
         }
     }
 
