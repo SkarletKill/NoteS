@@ -288,8 +288,8 @@ public class RecordActivity extends AppCompatActivity
             RecordAdapter recordAdapter = new RecordAdapter(records, recordDescriptions);
             recordsRecyclerView.setAdapter(recordAdapter);
 
-        } else if (id == R.id.nav_add_genre) {
-            Intent intent = new Intent(RecordActivity.this, NewGenreActivity.class);
+        } else if (id == R.id.nav_manage_genres) {
+            Intent intent = new Intent(RecordActivity.this, GenreActivity.class);
             intent.putExtra(Constants.CATEGORY_ID, categoryId);
             startActivity(intent);
         }

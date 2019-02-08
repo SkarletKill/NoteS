@@ -17,9 +17,9 @@
     <item android:title="Genre management">
         <menu>
             <item
-                android:id="@+id/nav_add_genre"
-                android:icon="@drawable/ic_menu_add_genre"
-                android:title="Add new genre" />
+                android:id="@+id/nav_manage_genres"
+                android:icon="@drawable/ic_next"
+                android:title="Manage genres" />
         </menu>
     </item>
 

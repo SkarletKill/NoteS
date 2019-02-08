@@ -7,9 +7,12 @@ public interface Constants {
     String RECORD_SORT = "recordSort";
     String CATEGORY = "category";
     String RECORD = "record";
+    String GENRE = "genre";
 
     String ADD_RECORD = "Add a new record";
     String EDIT_RECORD = "Update the record";
     String ADD_CATEGORY = "Add a new category";
     String EDIT_CATEGORY = "Update the category";
+    String ADD_GENRE = "Add a new genre";
+    String EDIT_GENRE = "Update the genre";
 }
