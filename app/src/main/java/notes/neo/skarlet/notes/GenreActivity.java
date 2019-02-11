@@ -83,7 +83,7 @@ public class GenreActivity extends AppCompatActivity {
             public void onRightClicked(int position) {
                 db.genreDao().delete(genres.get(position));
 
-                Intent intent = new Intent(GenreActivity.this, NewGenreActivity.class);
+                Intent intent = new Intent(GenreActivity.this, GenreActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.putExtra(Constants.CATEGORY_ID, categoryId);
                 startActivity(intent);

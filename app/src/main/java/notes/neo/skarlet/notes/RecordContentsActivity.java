@@ -14,25 +14,29 @@ import notes.neo.skarlet.notes.database.entity.Record;
 import notes.neo.skarlet.notes.entity.Constants;
 
 public class RecordContentsActivity extends AppCompatActivity {
-    private Integer recordId;
+    private Record record;
     private EditText noteText;
     private Button saveButton;
+    private NotesDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record_contents);
 
-        recordId = getIntent().getExtras().getInt(Constants.RECORD);
+        Integer recordId = getIntent().getExtras().getInt(Constants.RECORD);
         noteText = (EditText) findViewById(R.id.record_contents);
         saveButton = (Button) findViewById(R.id.btn_record_contents);
 
-        NotesDatabase db = Room.databaseBuilder(getApplicationContext(), NotesDatabase.class, DBTables.DB_NAME)
+        db = Room.databaseBuilder(getApplicationContext(), NotesDatabase.class, DBTables.DB_NAME)
                 .allowMainThreadQueries().build();
-        Record record = db.recordDao().getById(recordId);
+        record = db.recordDao().getById(recordId);
+        noteText.setText(record.getText());
     }
 
     public void onSaveClick(View view) {
-
+        record.setText(String.valueOf(noteText.getText()));
+        db.recordDao().update(record);
+        onBackPressed();
     }
 }
